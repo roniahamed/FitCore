@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'adminapp',
     'authapp',
-    'users'
+    'users',
     'health',
     'meal',
     'workout',
