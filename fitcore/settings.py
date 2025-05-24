@@ -86,7 +86,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'fitcore',
         'USER':'postgres',
-        'PASSWORD':'roni',
+        'PASSWORD':'admin',
         'HOST': 'localhost',
         'PORT':5432,
     }
