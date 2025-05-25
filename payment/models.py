@@ -35,3 +35,13 @@ class Payments(models.Model):
         verbose_name = 'Payment'
         verbose_name_plural = 'Payments'
         ordering = ['-purchases_date']
+
+
+class Purchases(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='purchases')
+    plan_type = models.CharField(max_length=100)
+    purchases_date = models.DateField()
+    transaction_id = models.CharField(max_length=200)
+    
+    def __str__(self):
+        return f"{self.user} - {self.plan_type}"
