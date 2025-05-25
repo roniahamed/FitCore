@@ -17,3 +17,19 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.email
+    
+
+Choices = [('male','Male'), ('female','Female')]
+
+
+class UsersProfile(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='profile')
+    age = models.PositiveIntegerField()
+    weight = models.FloatField(help_text="Weight in kg")
+    height = models.FloatField(help_text="Height in cm")
+    gender = models.CharField(max_length=10,choices=Choices, blank=False, null=False )
+    fitness_goal = models.CharField(max_length=200)
+
+    def __str__(self):
+        return f'{self.user.email} - {self.fitness_goal}'
+
