@@ -24,6 +24,7 @@ Choices = [('male','Male'), ('female','Female')]
 
 class UsersProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='profile')
+    img = models.ImageField(upload_to='profile', blank=True, null=True)
     age = models.PositiveIntegerField()
     weight = models.FloatField(help_text="Weight in kg")
     height = models.FloatField(help_text="Height in cm")
