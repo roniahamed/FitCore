@@ -40,8 +40,17 @@ INSTALLED_APPS = [
 
     # Rest_Framework
     'rest_framework',
+
+    # Authentication 
+
+    # jwt 
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+
+
+    # dj-rest-auth
+    'dj_rest_auth',
+    'rest_framework.authtoken',
 
 
     #Extra App
@@ -152,12 +161,23 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # REST_FRAMEWORK 
 
+
+REST_AUTH = {
+    'USE_JWT':True,
+    'JWT_AUTH_COOKIE': 'fitcore-access-token',  # Cookie name
+    'JWT_AUTH_REFRESH_COOKIE': 'fitcore-refresh-token',
+}
+
+
 REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES':(
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     )
 }
+
+
 
 # Time zone
 TIME_ZONE = 'Asia/Dhaka'
@@ -178,5 +198,7 @@ SIMPLE_JWT = {
     "UPDATE_LAST_LOGIN": False,
 
 }
+
+
 
 
