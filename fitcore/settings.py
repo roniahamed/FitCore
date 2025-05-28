@@ -47,11 +47,14 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
 
-
     # dj-rest-auth
     'dj_rest_auth',
     'rest_framework.authtoken',
-
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'dj_rest_auth.registration',
 
     #Extra App
     'adminapp',
@@ -63,6 +66,8 @@ INSTALLED_APPS = [
     'notification',
     'payment',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
