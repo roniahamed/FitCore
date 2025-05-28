@@ -1,9 +1,9 @@
-from django.urls import path
+from django.urls import path, include
 from .views import UserRegister, UserDelete, UserUpdate, LogoutView
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView, TokenVerifyView)
 
 urlpatterns = [
-        # Authentications
+    # Authentications
 
     # jwt Authentication 
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
@@ -14,4 +14,8 @@ urlpatterns = [
     path('update/', UserUpdate.as_view(), name='user_update'),
     path('delete/', UserDelete.as_view(), name='user_delete'),
     path('logout/', LogoutView.as_view(), name='logout'),
+
+
+    # dj-rest-auth
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),
 ]
