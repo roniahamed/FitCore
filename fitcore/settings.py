@@ -170,12 +170,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # REST_FRAMEWORK 
 
+REST_USE_JWT = True 
 
 REST_AUTH = {
     'USE_JWT':True,
     'JWT_AUTH_COOKIE': 'fitcore-access-token',  # Cookie name
     'JWT_AUTH_REFRESH_COOKIE': 'fitcore-refresh-token',
+    'REGISTER_SERIALIZER': 'users.serializers.CustomSerializer',
 }
+
 
 
 REST_FRAMEWORK = {
@@ -211,6 +214,10 @@ SIMPLE_JWT = {
 
 # dj-rest-auth
 
+# REST_AUTH_REGISTER_SERIALIZERS = {
+#     'REGISTER_SERIALIZER': 'users.serializers.CustomSerializer'
+# }
+
 # authentication Backend
 
 AUTHENTICATION_BACKENDS = [
@@ -218,12 +225,9 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_LOGIN_METHODS =('email',)
-# ACCOUNT_AUTHENTICATION_METHOD = 'email'
-
-ACCOUNT_SIGNUP_FIELDS = ['email*','password*']
-
+ACCOUNT_LOGIN_METHODS ={'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password*']
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+
 
