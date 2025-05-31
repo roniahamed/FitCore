@@ -24,10 +24,10 @@ class CustomSerializer(RegisterSerializer):
             raise ValidationError('This email is already register')
         user = CustomUser(
             email = cleaned_data['email'],
-            password = cleaned_data['password'],
             first_name = cleaned_data['first_name'],
             last_name = cleaned_data['last_name']
         )
+        user.set_password(cleaned_data['password'])
         user.save()
         return user
 

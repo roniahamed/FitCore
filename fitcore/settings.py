@@ -168,6 +168,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
+
+
+
+
+
+
+# Time zone
+TIME_ZONE = 'Asia/Dhaka'
+USE_TZ = True
+
+
 # REST_FRAMEWORK 
 
 REST_USE_JWT = True 
@@ -179,21 +190,6 @@ REST_AUTH = {
     'REGISTER_SERIALIZER': 'users.serializers.CustomSerializer',
 }
 
-
-
-REST_FRAMEWORK = {
-
-    'DEFAULT_AUTHENTICATION_CLASSES':(
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
-    )
-}
-
-
-
-# Time zone
-TIME_ZONE = 'Asia/Dhaka'
-USE_TZ = True
 
 
 # Simple-JWT
@@ -211,19 +207,15 @@ SIMPLE_JWT = {
 
 }
 
+REST_FRAMEWORK = {
 
-# dj-rest-auth
+    'DEFAULT_AUTHENTICATION_CLASSES':(
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+    )
+}
 
-# REST_AUTH_REGISTER_SERIALIZERS = {
-#     'REGISTER_SERIALIZER': 'users.serializers.CustomSerializer'
-# }
 
-# authentication Backend
-
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-]
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_LOGIN_METHODS ={'email'}
