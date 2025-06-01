@@ -10,7 +10,6 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'), 
 
-    path('register/', UserRegister.as_view(), name='user_register'),
     path('update/', UserUpdate.as_view(), name='user_update'),
     path('delete/', UserDelete.as_view(), name='user_delete'),
     path('logout/', LogoutView.as_view(), name='logout'),

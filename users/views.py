@@ -7,13 +7,6 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
-
-class UserRegister(generics.CreateAPIView):
-    authentication_classes = []
-    permission_classes = [permissions.AllowAny]
-    queryset = CustomUser.objects.all()
-    serializer_class = RegisterSerializer
-
 class UserUpdate(generics.RetrieveUpdateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserUpdateSerializer
