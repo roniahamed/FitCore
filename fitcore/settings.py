@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # Front-end
+    'corsheaders',
+
     # Rest_Framework
     'rest_framework',
 
@@ -78,6 +81,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
+    #Front-end
+    'corsheaders.middleware.CorsMiddleware',
 
     # allauth 
     "allauth.account.middleware.AccountMiddleware",
@@ -167,9 +172,11 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# Email Settings
 
-
-
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_CONFIRM_EMAIL_ON_GET = False
 
 
 
@@ -189,6 +196,9 @@ REST_AUTH = {
     'JWT_AUTH_REFRESH_COOKIE': 'fitcore-refresh-token',
     'REGISTER_SERIALIZER': 'users.serializers.CustomSerializer',
 }
+
+
+
 
 
 
@@ -216,10 +226,23 @@ REST_FRAMEWORK = {
 }
 
 
+# DJ-REST-Auth
+
+
+DJRESTAUTH = {
+    'PASSWORD_RESET_CONFIRM_URL':'password-reset-confirm/{uid}/{token}',
+    'USE_JWT':True
+}
+
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_LOGIN_METHODS ={'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password*']
-ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 
+
+# Front-End
+
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:5500",
+]
