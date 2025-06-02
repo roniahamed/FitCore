@@ -1,6 +1,6 @@
 from .models import CustomUser, UsersProfile
 from rest_framework import generics , permissions
-from .serializers import RegisterSerializer, UserUpdateSerializer
+from .serializers import UserUpdateSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response

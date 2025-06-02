@@ -1,6 +1,7 @@
 from django.urls import path, include
-from .views import UserRegister, UserDelete, UserUpdate, LogoutView
+from .views import UserDelete, UserUpdate, LogoutView
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView, TokenVerifyView)
+from dj_rest_auth.registration.views import VerifyEmailView
 
 urlpatterns = [
     # Authentications
@@ -17,6 +18,7 @@ urlpatterns = [
 
     # dj-rest-auth
     path('oauth/', include('dj_rest_auth.urls')),
-    path('oauth/registration/',include('dj_rest_auth.registration.urls')),
+    path('registration/',include('dj_rest_auth.registration.urls')),
+    path('account-confirm-email/', VerifyEmailView.as_view(), name='account_email_verification_sent')
 ]
 
