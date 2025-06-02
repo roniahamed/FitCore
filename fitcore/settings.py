@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
 
     # Front-end
     'corsheaders',
@@ -53,11 +55,13 @@ INSTALLED_APPS = [
     # dj-rest-auth
     'dj_rest_auth',
     'rest_framework.authtoken',
-    'django.contrib.sites',
+    'dj_rest_auth.registration',
+
+    # Allauth
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'dj_rest_auth.registration',
+    'allauth.socialaccount.providers.google',
 
     #Extra App
     'adminapp',
@@ -246,3 +250,16 @@ ACCOUNT_SIGNUP_FIELDS = ['email*', 'password*']
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5500",
 ]
+
+
+# Social Login
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': '5622366605-sn59fmjeu9iaaqdnp0fmsjkjhpgd55kg.apps.googleusercontent.com',
+            'secret': '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',
+            'key': ''
+        }
+    }
+}
