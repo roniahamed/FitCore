@@ -31,16 +31,3 @@ class CustomSerializer(RegisterSerializer):
         user.save()
         return user
 
-
-
-
-class UserUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = ['first_name', 'last_name']
-
-    def update(self, instance, validate_data):
-        for attr, value in validate_data.items():
-            setattr(instance,attr,value)
-        instance.save()
-        return instance
