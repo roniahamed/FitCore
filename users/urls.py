@@ -1,6 +1,6 @@
 from django.urls import path, include
 from dj_rest_auth.registration.views import VerifyEmailView
-from .views import GoogleLogin
+from .views import GoogleLogin,Profile
 
 urlpatterns = [
     # Authentications
@@ -13,5 +13,8 @@ urlpatterns = [
     # Social Authentications
     path('social/', include('allauth.socialaccount.urls')),
     path('google/login/', GoogleLogin.as_view(), name='google_login'),
+
+
+    path('profile/',Profile.as_view(), name='profile' )
 ]
 
