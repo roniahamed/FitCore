@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from rest_framework.exceptions import ValidationError
-from .models import CustomUser
+from .models import CustomUser, UsersProfile
 
 
 class CustomSerializer(RegisterSerializer):
@@ -31,3 +31,34 @@ class CustomSerializer(RegisterSerializer):
         user.save()
         return user
 
+
+class UsersProfileSerializer(serializers.ModelSerializer):
+    user = CustomSerializer(read_only=True)
+    img = serializers.ImageField( required=False, allow_null=True)
+     
+    class Meta:
+        model = UsersProfile
+        fields = ['id', 'user', 'img', 'age', 'weight', 'height', 'gender', 'fitness_goal']
+        read_only_fields = ['user']
+
+    def validate_age(self, value):
+        if value < 12:
+            raise ValidationError('Age must be at least 12 years.')
+        
+    def validate(self, attrs):
+        if attrs['weight'] < 20 or attrs['height'] < 100:
+            raise ValidationError('Weight and Height must be realistic.')
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        user = request.user if request else None
+
+        if not user:
+            raise ValidationError('User Must be authticated!')
+        profile = UsersProfile.objects.create(user=user, **validated_data)
+
+    def update(self, instance, validated_data):
+        for attr, vlaue in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
