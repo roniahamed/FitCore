@@ -25,11 +25,11 @@ Choices = [('male','Male'), ('female','Female')]
 class UsersProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='profile')
     img = models.ImageField(upload_to='profile', blank=True, null=True)
-    age = models.PositiveIntegerField()
-    weight = models.FloatField(help_text="Weight in kg")
-    height = models.FloatField(help_text="Height in cm")
-    gender = models.CharField(max_length=10,choices=Choices, blank=False, null=False )
-    fitness_goal = models.CharField(max_length=200)
+    age = models.PositiveIntegerField(blank=True,null=True)
+    weight = models.FloatField(help_text="Weight in kg", blank=True,null=True)
+    height = models.FloatField(help_text="Height in cm" , blank=True,null=True)
+    gender = models.CharField(max_length=10,choices=Choices, blank=True,null=True)
+    fitness_goal = models.CharField(max_length=200 , blank=True,null=True)
 
     def __str__(self):
         return f'{self.user.email} - {self.fitness_goal}'
