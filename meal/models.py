@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator
+from django.utils import timezone
 
 
 # Helper Constants (Choices)
@@ -218,3 +219,17 @@ class MealPlan(models.Model):
         verbose_name = "Meal Plan"
         verbose_name_plural = "Meal Plans"
         ordering = ['user', '-created_at']
+
+class ScheduledMeal(models.Model):
+    meal_plan = models.ForeignKey(MealPlan, on_delete=models.CASCADE, verbose_name="Meal Plan")
+    meal = models.ForeignKey(Meal, on_delete=models.CASCADE, verbose_name="Meal") # This can be a template meal or a user-created meal
+    day_of_plan = models.PositiveIntegerField(verbose_name="Day of Plan") # e.g., 1, 2, ..., meal_plan.duration_days
+
+    def __str__(self):
+        return f"Plan: {self.meal_plan.name} - Day {self.day_of_plan}: {self.meal.name}"
+
+    class Meta:
+        verbose_name = "Scheduled Meal"
+        verbose_name_plural = "Scheduled Meals"
+        unique_together = ('meal_plan', 'meal', 'day_of_plan')
+        ordering = ['meal_plan', 'day_of_plan', 'meal__meal_time_category']
