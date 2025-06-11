@@ -189,16 +189,33 @@ class MealItem(models.Model):
 
 class MealPlan(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mealplan')
-    meal = models.ManyToManyField(Meal, related_name='meal')
-    date = models.DateField()
-    total_calories = models.FloatField()
-    protein = models.FloatField()
-    carbs = models.FloatField()
-    fats = models.FloatField()
+    name = models.CharField(max_length=150, verbose_name="Meal Plan Name")
+    description = models.TextField(blank=True, null=True, verbose_name="Description")
+    goal = models.CharField(
+        max_length=2,
+        choices=MealPlanGoal.choices,
+        default=MealPlanGoal.GENERAL_HEALTH,
+        verbose_name="Plan Goal"
+    )
+    duration_days = models.PositiveIntegerField(default=7, verbose_name='Plan Duration (days)')
+    start_date = models.DateField(blank=True, null=True, verbose_name="Start Date")
+    # Desired daily nutrition (optional)
+    target_daily_calories = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0)], verbose_name="Target Daily Calories")
+    target_daily_protein = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0)], verbose_name="Target Daily Protein (g)")
+    target_daily_carbohydrates = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0)], verbose_name="Target Daily Carbohydrates (g)")
+    target_daily_fat = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0)], verbose_name="Target Daily Fat (g)")
+
+    meals = models.ManyToManyField(Meal, through='ScheduledMeal', related_name='meal_plans_containing', verbose_name="Meals")
+    is_active = models.BooleanField(default=True, verbose_name="Is Plan Active?")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     is_ai_generated = models.BooleanField(default=False)
 
-
     def __str__(self):
-        return f"{self.user}"
+        return f"{self.user.username} - {self.name} ({self.duration_days} days)"
     
+    class Meta:
+        verbose_name = "Meal Plan"
+        verbose_name_plural = "Meal Plans"
+        ordering = ['user', '-created_at']
 
