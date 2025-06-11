@@ -218,4 +218,3 @@ class MealPlan(models.Model):
         verbose_name = "Meal Plan"
         verbose_name_plural = "Meal Plans"
         ordering = ['user', '-created_at']
-
