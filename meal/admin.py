@@ -24,3 +24,24 @@ class FoodAdmin(admin.ModelAdmin):
         })
     )
 
+@admin.register(Meal)
+class MealAdmin(admin.ModelAdmin):
+    list_display = ('name', 'user', 'meal_time_category', 'total_calories_display','total_protein_display','total_carbohydrates_display','total_fat_display', 'is_template', 'created_at')
+    list_filter = ('meal_time_category', 'user', 'is_template')
+    search_fields = ('name', 'user__username', 'description')
+    inlines = [MealItemInline]
+    readonly_fields = ('total_calories', 'total_protein', 'total_carbohydrates', 'total_fat')
+    def total_calories_display(self, obj):
+        return obj.total_calories
+    total_calories_display.short_description = "Total Calories"
+    def total_protein_display(self, obj):
+        return obj.total_protein
+    total_protein_display.short_description = "Total Protein"
+
+    def total_carbohydrates_display(self, obj):
+        return obj.total_carbohydrates
+    total_carbohydrates_display.short_description = "Total Carbohydrates"
+
+    def total_fat_display(self, obj):
+        return obj.total_fat
+    total_fat_display.short_description = "Total Fat"
