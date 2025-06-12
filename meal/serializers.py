@@ -57,23 +57,23 @@ class MealSerializer(serializers.ModelSerializer):
             'total_calories', 'total_protein', 'total_carbohydrates', 'total_fat'
         ]
     def _handle_meal_items(self, meal_instance, meal_items_payload):
-        if meal_items_payload is None:
-            return 
-        existing_items = {item.id: item for item in meal_instance.mealitem_set.all()}
-        incoming_ids = set()
-        for item_data in meal_items_payload:
-            item_id = item_data.get('id', None)
-            if item_id and item_id in existing_items:
-                item = existing_items[item_id]
-                item.food_id = item_data['food']
-                item.number_of_servings = item_data['number_of_servings']
-                item.save()
-                incoming_ids.add(item_id)
-            else:
-                MealItem.objects.create(meal=meal_instance, food_id= item_data['food'], number_of_servings=item_data['number_of_servings'])
-        for item_id in existing_items:
-            if item_id not in incoming_ids:
-                existing_items[item_id].delete()
+        if meal_items_payload is not None:
+        
+            existing_items = {item.id: item for item in meal_instance.mealitem_set.all()}
+            incoming_ids = set()
+            for item_data in meal_items_payload:
+                item_id = item_data.get('id', None)
+                if item_id and item_id in existing_items:
+                    item = existing_items[item_id]
+                    item.food_id = item_data['food']
+                    item.number_of_servings = item_data['number_of_servings']
+                    item.save()
+                    incoming_ids.add(item_id)
+                else:
+                    MealItem.objects.create(meal=meal_instance, food_id= item_data['food'], number_of_servings=item_data['number_of_servings'])
+            for item_id in existing_items:
+                if item_id not in incoming_ids:
+                    existing_items[item_id].delete()
         
     def create(self, validated_data):
         meal_items_payload = validated_data.pop('meal_items_payload', [])
@@ -100,5 +100,41 @@ class ScheduledMealSerializer(serializers.ModelSerializer):
 
         read_only_fields = ['id', 'meal_plan', 'meal_detail']
 
+
+class MealPlanSerializer(serializers.ModelSerializer):
+    user_detail = CustomSerializer(source='user', read_only=True)
+    scheduled_meals = ScheduledMealSerializer(many=True, read_only=True, required=False)
+
+    scheduled_meals_payload = ScheduledMealSerializer(many=True, write_only=True, required=False)
+
+    class Meta:
+        model = MealPlan 
+        fields = [
+            'id', 'user', 'user_detail', 'name', 'description', 'goal', 'duration_days', 'start_date',
+            'target_daily_calories', 'is_active',
+            'is_template', 
+            'scheduled_meals', # For reading existing items
+            'scheduled_meals_payload', # For creating/updating items
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'user', 'user_detail', 'scheduled_meals', 'created_at', 'updated_at']
+
+    def _handle_scheduled_meals(self, meal_plan_instance, scheduled_meals_payload):
+        existing_meals = {sm.id:sm for sm in meal_plan_instance.scheduledmeal_set.all()}
+        incoming_item_ids = set()
+
+        for item_data in scheduled_meals_payload:
+            item_id = item_data.get('id', None)
+            if item_id and item_id in existing_meals:
+                scheduled_meal = existing_meals[item_id]
+                scheduled_meal.day_of_plan = item_data.get('day_of_plan', scheduled_meal.day_of_plan)
+                scheduled_meal.save()
+                incoming_item_ids.add(item_id)
+            else:
+                scheduled_meal = ScheduledMeal.objects.create(meal_plan= meal_plan_instance, meal=item_data['meal'], day_of_plan=item_data['day_of_plan'] )
+                incoming_item_ids.add(scheduled_meal.id)
         
+        for meal_id, meal_instance in existing_meals.items():
+            if meal_id not in incoming_item_ids:
+                meal_instance.delete()
 
