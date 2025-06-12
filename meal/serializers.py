@@ -27,3 +27,13 @@ class FoodSerializer(serializers.ModelSerializer):
         else:
             validated_data['user_added'] = None
         return super().create(validated_data)
+
+class MealItemSerializer(serializers.ModelSerializer):
+    food_detail = FoodSerializer(source='food', read_only=True)
+    food = serializers.PrimaryKeyRelatedField(queryset=Food.objects.all(), write_only=True)
+
+    class Meta:
+        model = MealItem
+        fields = [ 'id', 'meal', 'food', 'food_detail', 'number_of_servings',
+            'calculated_calories', 'calculated_protein', 'calculated_carbohydrates', 'calculated_fat']
+        read_only_fields = ['id', 'meal', 'food_detail', 'calculated_calories', 'calculated_protein', 'calculated_carbohydrates', 'calculated_fat']    
