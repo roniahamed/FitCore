@@ -39,6 +39,7 @@ class MealItemSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'meal', 'food_detail', 'calculated_calories', 'calculated_protein', 'calculated_carbohydrates', 'calculated_fat']    
 
 class MealSerializer(serializers.ModelSerializer):
+
     user_detail = CustomSerializer(source='user', read_only = True)
     meal_items = MealItemSerializer(many=True, source='mealitem_set')
 
@@ -88,3 +89,16 @@ class MealSerializer(serializers.ModelSerializer):
         if meal_items_payload is not None:
             self._handle_meal_items(instance, meal_items_payload)
         return instance
+
+class ScheduledMealSerializer(serializers.ModelSerializer):
+    meal_detail = MealSerializer(source='meal', read_only=True)    
+    meal = serializers.PrimaryKeyRelatedField(queryset=Meal.objects.all(), write_only=True)
+
+    class Meta:
+        model = ScheduledMeal
+        fields = ['id', 'meal_plan', 'meal', 'meal_detail', 'day_of_plan']
+
+        read_only_fields = ['id', 'meal_plan', 'meal_detail']
+
+        
+
