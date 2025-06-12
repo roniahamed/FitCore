@@ -45,3 +45,28 @@ class MealAdmin(admin.ModelAdmin):
     def total_fat_display(self, obj):
         return obj.total_fat
     total_fat_display.short_description = "Total Fat"
+
+class ScheduledMealInline(admin.TabularInline):
+    model = ScheduledMeal
+    extra = 1
+    autocomplete_fields = ['meal'] # For easier searching if you have many Meal items
+
+@admin.register(MealPlan)
+class MealPlanAdmin(admin.ModelAdmin):
+    list_display = ('name', 'user', 'goal', 'duration_days', 'is_active', 'start_date')
+    list_filter = ('goal', 'user', 'is_active')
+    search_fields = ('name', 'user__username', 'description')
+    inlines = [ScheduledMealInline]
+    fieldsets = (
+        (None, { 
+            'fields': ('user', 'name', 'description', 'goal')
+        }),
+        ('Plan Details', {
+            'fields': ('duration_days', 'start_date', 'is_active')
+        }),
+        ('Target Nutrition (Optional)', {
+            'classes': ('collapse',), # Collapsed by default
+             # Add other target nutrients here
+             'fields': ('target_daily_calories', 'target_daily_protein', 'target_daily_carbohydrates', 'target_daily_fat')
+        }),
+    )
