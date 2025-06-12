@@ -56,7 +56,7 @@ class MealSerializer(serializers.ModelSerializer):
             'total_calories', 'total_protein', 'total_carbohydrates', 'total_fat'
         ]
     def _handle_meal_items(self, meal_instance, meal_items_payload):
-        if meal_items_payload is not None:
+        if meal_items_payload is None:
             return 
         existing_items = {item.id: item for item in meal_instance.mealitem_set.all()}
         incoming_ids = set()
@@ -83,11 +83,7 @@ class MealSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         meal_items_payload = validated_data.pop('meal_items_payload', None)
 
-        instance.name = validated_data.get('name', instance.name)
-        instance.meal_time_category = validated_data.get('meal_time_category', instance.meal_time_category)
-        instance.description=validated_data.get('description', instance.description)
-        instance.is_template = validated_data.get('is_template', instance.is_template)
-        instance.save()
+        instance = super().update(instance, validated_data)
 
         if meal_items_payload is not None:
             self._handle_meal_items(instance, meal_items_payload)
