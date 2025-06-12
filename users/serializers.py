@@ -58,7 +58,7 @@ class UsersProfileSerializer(serializers.ModelSerializer):
         profile = UsersProfile.objects.create(user=user, **validated_data)
 
     def update(self, instance, validated_data):
-        for attr, vlaue in validated_data.items():
+        for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
         return instance
