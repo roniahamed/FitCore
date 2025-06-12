@@ -120,21 +120,22 @@ class MealPlanSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'user', 'user_detail', 'scheduled_meals', 'created_at', 'updated_at']
 
     def _handle_scheduled_meals(self, meal_plan_instance, scheduled_meals_payload):
-        existing_meals = {sm.id:sm for sm in meal_plan_instance.scheduledmeal_set.all()}
-        incoming_item_ids = set()
+        if scheduled_meals_payload is not None:
+            existing_meals = {sm.id:sm for sm in meal_plan_instance.scheduledmeal_set.all()}
+            incoming_item_ids = set()
 
-        for item_data in scheduled_meals_payload:
-            item_id = item_data.get('id', None)
-            if item_id and item_id in existing_meals:
-                scheduled_meal = existing_meals[item_id]
-                scheduled_meal.day_of_plan = item_data.get('day_of_plan', scheduled_meal.day_of_plan)
-                scheduled_meal.save()
-                incoming_item_ids.add(item_id)
-            else:
-                scheduled_meal = ScheduledMeal.objects.create(meal_plan= meal_plan_instance, meal=item_data['meal'], day_of_plan=item_data['day_of_plan'] )
-                incoming_item_ids.add(scheduled_meal.id)
-        
-        for meal_id, meal_instance in existing_meals.items():
-            if meal_id not in incoming_item_ids:
-                meal_instance.delete()
+            for item_data in scheduled_meals_payload:
+                item_id = item_data.get('id', None)
+                if item_id and item_id in existing_meals:
+                    scheduled_meal = existing_meals[item_id]
+                    scheduled_meal.day_of_plan = item_data.get('day_of_plan', scheduled_meal.day_of_plan)
+                    scheduled_meal.save()
+                    incoming_item_ids.add(item_id)
+                else:
+                    scheduled_meal = ScheduledMeal.objects.create(meal_plan= meal_plan_instance, meal=item_data['meal'], day_of_plan=item_data['day_of_plan'] )
+                    incoming_item_ids.add(scheduled_meal.id)
+            
+            for meal_id, meal_instance in existing_meals.items():
+                if meal_id not in incoming_item_ids:
+                    meal_instance.delete()
 
