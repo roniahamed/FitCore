@@ -119,8 +119,6 @@ class Meal(models.Model):
         verbose_name_plural = 'Meals'
         ordering = ['-created_at']
 
-
-
 # Junction table for Many-to-Many relationship between Meal and Food, storing quantity
 class MealItem(models.Model):
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE, verbose_name="Meal")
@@ -186,7 +184,6 @@ class MealItem(models.Model):
         verbose_name_plural = "Meal Items"
         unique_together = ('meal', 'food') # Should increase quantity rather than adding the same food multiple times to one meal
 
-    
 
 class MealPlan(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mealplan')
