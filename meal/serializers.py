@@ -139,3 +139,20 @@ class MealPlanSerializer(serializers.ModelSerializer):
                 if meal_id not in incoming_item_ids:
                     meal_instance.delete()
 
+    def create(self, validated_data):
+        scheduled_meals_payload = validated_data.pop('scheduled_meals_payload', [])
+
+        meal_plan = MealPlan.objects.create(**validated_data)
+
+        self._handle_scheduled_meals(meal_plan, scheduled_meals_payload)
+
+        return meal_plan
+    def update(self, instance, validated_data):
+
+        scheduled_meals_payload = validated_data('scheduled_meals_payload', None)
+
+        instance = super().update(instance, validated_data)
+
+        if scheduled_meals_payload is not None:
+            self._handle_scheduled_meals(instance, scheduled_meals_payload)
+        return instance
