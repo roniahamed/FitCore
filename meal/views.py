@@ -111,4 +111,15 @@ class MealPlanViewSet(viewsets.ModelViewSet):
             serializer.save(user=user, is_template = True)
         else:
             serializer.save(user=user, is_template=False)
+    
+    @action(detail=True, methods=['patch'], url_path='cancel', permission_classes=[IsAuthenticated, IsOwner])
+    def cancel_user_meal_plan(self, request, pk=None):
+        """
+        Cancel a user’s meal plan (sets is_active to False).
+        """
+        meal_plan = self.get_object()  # get_object already enforces IsOwner permission from get_permissions
+        meal_plan.is_active = False 
+        meal_plan.save()
+        serializer = self.get_serializer(meal_plan)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
