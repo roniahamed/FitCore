@@ -149,7 +149,7 @@ class MealPlanSerializer(serializers.ModelSerializer):
         return meal_plan
     def update(self, instance, validated_data):
 
-        scheduled_meals_payload = validated_data('scheduled_meals_payload', None)
+        scheduled_meals_payload = validated_data.pop('scheduled_meals_payload', None)
 
         instance = super().update(instance, validated_data)
 
