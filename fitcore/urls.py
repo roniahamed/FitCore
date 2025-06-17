@@ -10,6 +10,9 @@ urlpatterns = [
     
     # users App
     path('api/auth/', include('users.urls')),
+
+    #meal
+    path('api/meal/',include('meal.urls')),
     
     
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
