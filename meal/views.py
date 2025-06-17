@@ -48,3 +48,17 @@ class FoodViewSet(viewsets.ModelViewSet):
 
 
 
+class MealViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for managing user's Meals.
+    Meals are private to the user.
+    """
+    serializer_class = MealSerializer
+    permission_classes = [IsAuthenticated, IsOwner]  # Ensures only owner can access/modify
+
+    def get_queryset(self):
+         # Users can only see and manage their own meals
+        return Meal.objects.filter(user = self.request.user).prefetch_related('mealitem_set__food')
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
