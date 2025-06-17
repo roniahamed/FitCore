@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
 from django.db.models import Q
+from rest_framework.exceptions import PermissionDenied
 
 from .models import Food, Meal, MealPlan
 from .serializers import FoodSerializer, MealSerializer, MealPlanSerializer
@@ -100,4 +101,14 @@ class MealPlanViewSet(viewsets.ModelViewSet):
         return super().get_permission()
     
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user, is_template=False)# Ensure user-created plans are not templates
+        user = self.request.user
+
+        is_template_request = serializer.validated_data.get('is_template', 'false')
+
+        if is_template_request:
+            if not( user.is_staff or user.is_superuser):
+                raise PermissionDenied('You do not have permission to create a template.')
+            serializer.save(user=user, is_template = True)
+        else:
+            serializer.save(user=user, is_template=False)
+
