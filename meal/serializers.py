@@ -104,7 +104,7 @@ class ScheduledMealSerializer(serializers.ModelSerializer):
 class MealPlanSerializer(serializers.ModelSerializer):
     user_detail = CustomSerializer(source='user', read_only=True)
     scheduled_meals = ScheduledMealSerializer(many=True, read_only=True, required=False)
-
+    is_template = serializers.BooleanField(required=False, default=False)
     scheduled_meals_payload = ScheduledMealSerializer(many=True, write_only=True, required=False)
 
     class Meta:
