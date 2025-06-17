@@ -88,5 +88,16 @@ class MealPlanViewSet(viewsets.ModelViewSet):
             # Or define templates differently, e.g., user=None or owned by admin
             # Assuming 'is_template' field exists on MealPlan model:
             return MealPlan.objects.filter(is_template=True, is_active=True).prefetch_related('scheduledmeal_set__meal__mealitem_set__food')
+        
+        # For standard list, retrieve, update, delete -> user's own meal plans
         return MealPlan.objects.filter(user=user).prefetch_related('scheduledmeal_set__meal__mealitem_set__food')
     
+    def get_permissions(self):
+        if self.action in ['update', 'partial_update', 'destroy', 'cancel_user_meal_plan']:
+            return [IsAuthenticated(), IsOwnerOrAdmin()]
+        elif self.action == 'list_templates':
+            return [IsAuthenticatedOrReadOnly()]
+        return super().get_permission()
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, is_template=False)# Ensure user-created plans are not templates
