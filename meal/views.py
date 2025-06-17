@@ -123,3 +123,17 @@ class MealPlanViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(meal_plan)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=['get'], url_path='templates', permission_classes=[IsAuthenticatedOrReadOnly])
+    def list_templates(self, request):
+        """
+        Get available meal plan templates.
+        (Requires 'is_template' field on MealPlan model or adjust filter in get_queryset)
+        """
+
+        queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
