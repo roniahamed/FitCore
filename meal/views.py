@@ -8,6 +8,7 @@ from rest_framework.exceptions import PermissionDenied
 from .models import Food, Meal, MealPlan
 from .serializers import FoodSerializer, MealSerializer, MealPlanSerializer
 from .permission import IsOwner, IsOwnerOrAdmin, IsFoodOwnerOrPublic
+from django.db import transaction
 
 
 class FoodViewSet(viewsets.ModelViewSet):
@@ -76,6 +77,7 @@ class MealPlanViewSet(viewsets.ModelViewSet):
     - Get a specific meal plan by ID (GET /{id}/)
     - Delete a meal plan (DELETE /{id}/)
     - Get available meal plan templates (GET /templates/)
+    - Copy an existing meal plan (POST /{id}/copy/)
     """
 
     serializer_class = MealPlanSerializer
@@ -98,6 +100,8 @@ class MealPlanViewSet(viewsets.ModelViewSet):
             return [IsAuthenticated(), IsOwnerOrAdmin()]
         elif self.action == 'list_templates':
             return [IsAuthenticatedOrReadOnly()]
+        elif self.action == 'copy_meal_plan': # Permission for the copy action
+            return [IsAuthenticated()] # Any authenticated user can attempt to copy a plan they can view
         return super().get_permission()
     
     def perform_create(self, serializer):
@@ -137,3 +141,57 @@ class MealPlanViewSet(viewsets.ModelViewSet):
             return self.get_paginated_response(serializer.data)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['post'], url_path='copy')
+    def copy_meal_plan(self, request, pk=None):
+        """
+        Copies an existing meal plan for the current authenticated user.
+        The original plan can be a template or another user's plan (if visible).
+        The new plan will be owned by the request.user.
+        """
+
+        original_plan = self.get_object()
+        user = request.user
+
+        if original_plan.user == user and not original_plan.is_template:
+            return Response({'detail': 'You already own this meal plan.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            with transaction.atomic(): # Ensure atomicity: all or nothing
+                new_plan = MealPlan.objects.create(
+                    user=user,
+                    name=f"{original_plan.name} (Copy)",
+                    description=original_plan.description,
+                    duration_days=original_plan.duration_days,
+                    is_active=True,
+                    is_template=False,
+                    start_date=None,
+                    goal=original_plan.goal,
+                    target_daily_calories=original_plan.target_daily_calories,
+                )
+
+                original_scheduled_meals = original_plan.scheduledmeal_set.all()
+                new_scheduled_meals = []
+                for original_sm in original_scheduled_meals:
+                    new_scheduled_meals.append(
+                        ScheduledMeal(
+                            meal_plan=new_plan,
+                            meal=original_sm.meal,  # Reference the same Meal object
+                            day_of_plan=original_sm.day_of_plan
+                        )
+                    )
+                if new_scheduled_meals_to_create:
+                    ScheduledMeal.objects.bulk_create(new_scheduled_meals_to_create)
+                
+                serializer = self.get_serializer(new_plan)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+
+        except Exception as e:
+            print(f"Error copying meal plan: {e}") # Basic logging
+            return Response(
+                {"detail": "An error occurred while copying the meal plan."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        
