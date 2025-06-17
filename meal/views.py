@@ -62,3 +62,31 @@ class MealViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class MealPlanViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for managing user's Meal Plans.
+    Provides functionalities:
+    - Create a manual meal plan (POST /)
+    - Update a meal plan (PUT/PATCH /{id}/)
+    - Cancel a user’s meal plan (PATCH /{id}/cancel/)
+    - Get all meal plans of a specific user (GET /)
+    - Get a specific meal plan by ID (GET /{id}/)
+    - Delete a meal plan (DELETE /{id}/)
+    - Get available meal plan templates (GET /templates/)
+    """
+
+    serializer_class = MealPlanSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if self.action == 'list_templates':
+            # For the custom action
+            # Templates are MealPlan instances marked as 'is_template'
+            # Or define templates differently, e.g., user=None or owned by admin
+            # Assuming 'is_template' field exists on MealPlan model:
+            return MealPlan.objects.filter(is_template=True, is_active=True).prefetch_related('scheduledmeal_set__meal__mealitem_set__food')
+        return MealPlan.objects.filter(user=user).prefetch_related('scheduledmeal_set__meal__mealitem_set__food')
+    
