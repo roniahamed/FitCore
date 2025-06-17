@@ -4,8 +4,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
 from django.db.models import Q
 from rest_framework.exceptions import PermissionDenied
+from django.utils import timezone 
 
-from .models import Food, Meal, MealPlan
+from .models import Food, Meal, MealPlan, ScheduledMeal
 from .serializers import FoodSerializer, MealSerializer, MealPlanSerializer
 from .permission import IsOwner, IsOwnerOrAdmin, IsFoodOwnerOrPublic
 from django.db import transaction
@@ -25,7 +26,7 @@ class FoodViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
 
-    search_fields = ['name', 'brand_name', 'description', 'food_category_iexact']
+    search_fields = ['name', 'brand_name', 'description', 'food_category__iexact']
     ordering_fields = ['name', 'calories', 'protein', 'created_at']
     ordering = ['name']
 
@@ -41,7 +42,7 @@ class FoodViewSet(viewsets.ModelViewSet):
         elif self.action == 'create':
             return [IsAuthenticated()]
         else: 
-            return super().get_permission()
+            return super().get_permissions()
         
     def perform_create(self, serializer):
         # Serializer's create method handles assigning user_added based on context and is_public flag
@@ -102,7 +103,7 @@ class MealPlanViewSet(viewsets.ModelViewSet):
             return [IsAuthenticatedOrReadOnly()]
         elif self.action == 'copy_meal_plan': # Permission for the copy action
             return [IsAuthenticated()] # Any authenticated user can attempt to copy a plan they can view
-        return super().get_permission()
+        return super().get_permissions()
     
     def perform_create(self, serializer):
         user = self.request.user
@@ -171,9 +172,9 @@ class MealPlanViewSet(viewsets.ModelViewSet):
                 )
 
                 original_scheduled_meals = original_plan.scheduledmeal_set.all()
-                new_scheduled_meals = []
+                new_scheduled_meals_to_create = []
                 for original_sm in original_scheduled_meals:
-                    new_scheduled_meals.append(
+                    new_scheduled_meals_to_create.append(
                         ScheduledMeal(
                             meal_plan=new_plan,
                             meal=original_sm.meal,  # Reference the same Meal object
