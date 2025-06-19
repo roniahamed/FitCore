@@ -12,7 +12,7 @@ urlpatterns = [
     path('api/auth/', include('users.urls')),
 
     #meal
-    path('api/meal/',include('meal.urls')),
+    path('api/nutrition/',include('meal.urls')), # Meal app
     
     
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
