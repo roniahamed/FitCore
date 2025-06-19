@@ -26,7 +26,7 @@ class FoodViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
 
-    search_fields = ['name', 'brand_name', 'description', 'food_category__iexact']
+    search_fields = ['name', 'description', 'food_category__iexact']
     ordering_fields = ['name', 'calories', 'protein', 'created_at']
     ordering = ['name']
 
