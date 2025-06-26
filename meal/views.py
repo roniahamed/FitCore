@@ -50,7 +50,6 @@ class FoodViewSet(viewsets.ModelViewSet):
                           # My serializer already accesses self.context.get('request')
 
 
-
 class MealViewSet(viewsets.ModelViewSet):
     """
     API endpoint for managing user's Meals.

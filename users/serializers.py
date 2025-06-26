@@ -41,14 +41,6 @@ class UsersProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'img', 'age', 'weight', 'height', 'gender', 'fitness_goal']
         read_only_fields = ['user']
 
-    def validate_age(self, value):
-        if value < 12:
-            raise ValidationError('Age must be at least 12 years.')
-        
-    def validate(self, attrs):
-        if attrs['weight'] < 20 or attrs['height'] < 100:
-            raise ValidationError('Weight and Height must be realistic.')
-
     def create(self, validated_data):
         request = self.context.get('request')
         user = request.user if request else None
