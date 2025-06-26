@@ -45,9 +45,14 @@ class FoodViewSet(viewsets.ModelViewSet):
             return super().get_permissions()
         
     def perform_create(self, serializer):
-        # Serializer's create method handles assigning user_added based on context and is_public flag
-        serializer.save() # Pass request to serializer context if needed for user_added logic
-                          # My serializer already accesses self.context.get('request')
+        
+        is_public = serializer.validated_data.get('is_public', False)
+        user_added_id = serializer.validated_data.get('user_added_id', None)
+
+        if self.request.user.is_staff and is_public:
+            serializer.save(user_added=self.request.user)
+        else:
+            serializer.save(user_added = self.request.user, is_public=False) 
 
 
 class MealViewSet(viewsets.ModelViewSet):
