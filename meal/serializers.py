@@ -40,48 +40,53 @@ class MealItemSerializer(serializers.ModelSerializer):
 class MealSerializer(serializers.ModelSerializer):
 
     user_detail = CustomSerializer(source='user', read_only = True)
-    meal_items = MealItemSerializer(many=True, source='mealitem_set')
-
-    meal_items_payload = MealItemSerializer(many=True, write_only=True, required=False)
+    meal_items = MealItemSerializer(many=True, required=False, write_only=True)
 
     class Meta:
         model = Meal 
         fields = ['id', 'user', 'user_detail', 'name', 'meal_time_category', 'description', 'is_template',
-            'meal_items', # For reading existing items
-            'meal_items_payload', # For creating/updating items
+            'meal_items', 
             'total_calories', 'total_protein', 'total_carbohydrates', 'total_fat',
             'created_at', 'updated_at']
         read_only_fields = [
-            'id', 'user', 'user_detail', 'created_at', 'updated_at', 'meal_items',
+            'id', 'user', 'user_detail', 'created_at', 'updated_at',
             'total_calories', 'total_protein', 'total_carbohydrates', 'total_fat'
         ]
     def _handle_meal_items(self, meal_instance, meal_items_payload):
         if meal_items_payload is not None:
-        
             existing_items = {item.id: item for item in meal_instance.mealitem_set.all()}
+            # print(meal_items_payload)
             incoming_ids = set()
             for item_data in meal_items_payload:
                 item_id = item_data.get('id', None)
-                if item_id and item_id in existing_items:
-                    item = existing_items[item_id]
-                    item.food_id = item_data['food']
-                    item.number_of_servings = item_data['number_of_servings']
-                    item.save()
+                food_instance = item_data.get('food')
+                number_of_servings = item_data.get('number_of_servings')
+                if item_id is not None and item_id in existing_items:
+                    meal_item = existing_items[item_id]
+                    meal_item.food = food_instance
+                    meal_item.number_of_servings = number_of_servings
+                    meal_item.save()
                     incoming_ids.add(item_id)
-                else:
-                    MealItem.objects.create(meal=meal_instance, food_id= item_data['food'], number_of_servings=item_data['number_of_servings'])
+                elif food_instance and number_of_servings is not None:
+                    # create new Item
+                    new_item = MealItem.objects.create(meal=meal_instance, food= food_instance, number_of_servings=number_of_servings)
+                    incoming_ids.add(new_item.id)
             for item_id in existing_items:
                 if item_id not in incoming_ids:
                     existing_items[item_id].delete()
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['meal_items'] = MealItemSerializer(instance.mealitem_set.all(), many=True).data 
+        return representation
         
     def create(self, validated_data):
-        meal_items_payload = validated_data.pop('meal_items_payload', [])
+        meal_items_payload = validated_data.pop('meal_items', [])
         meal = Meal.objects.create(**validated_data)
         self._handle_meal_items(meal, meal_items_payload)
         return meal 
     
     def update(self, instance, validated_data):
-        meal_items_payload = validated_data.pop('meal_items_payload', None)
+        meal_items_payload = validated_data.pop('meal_items', None)
 
         instance = super().update(instance, validated_data)
 
