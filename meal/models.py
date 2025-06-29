@@ -208,6 +208,7 @@ class MealPlan(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_ai_generated = models.BooleanField(default=False)
+    is_template = models.BooleanField(default=False, verbose_name="Is Template Meal?") # Reusable template
 
     def __str__(self):
         return f"{self.user.username} - {self.name} ({self.duration_days} days)"
