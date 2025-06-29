@@ -53,7 +53,7 @@ class ScheduledMealInline(admin.TabularInline):
 
 @admin.register(MealPlan)
 class MealPlanAdmin(admin.ModelAdmin):
-    list_display = ('name', 'user', 'goal', 'duration_days', 'is_active', 'start_date')
+    list_display = ('name', 'user', 'goal', 'duration_days', 'is_active', 'start_date', 'is_template')
     list_filter = ('goal', 'user', 'is_active')
     search_fields = ('name', 'user__username', 'description')
     inlines = [ScheduledMealInline]
