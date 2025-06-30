@@ -31,6 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # admin dashboard
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -95,10 +97,15 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'fitcore.urls'
 
+
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR /'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR/'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
