@@ -4,6 +4,13 @@ from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 
 
+class PlanType(models.TextChoices):
+    """Defines the available plans. This is static as you have only two types."""
+    MONTHLY = 'MONTHLY', 'Monthly Subscription'
+    LIFETIME = 'LIFETIME', 'Lifetime Access (One-Time)'
+
+
+
 
 
 class Subscriptions(models.Model):
