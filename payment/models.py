@@ -9,6 +9,11 @@ class PlanType(models.TextChoices):
     MONTHLY = 'MONTHLY', 'Monthly Subscription'
     LIFETIME = 'LIFETIME', 'Lifetime Access (One-Time)'
 
+class PaymentGateway(models.TextChoices):
+    """Kept as choices as you might add PayPal later, but it's simple."""
+    STRIPE = 'STRIPE', 'Stripe'
+    PAYPAL = 'PAYPAL', 'Paypal'
+    MANUAL = 'MANUAL', 'Manual/Admin'
 
 
 
