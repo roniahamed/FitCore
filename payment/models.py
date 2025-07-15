@@ -22,7 +22,12 @@ class PaymentStatus(models.TextChoices):
     FAILED = 'FAILED', 'Failed'
     REFUNDED = 'REFUNDED', 'Refunded'
 
-
+class SubscriptionsStatus(models.TextChoices):
+    """Tracks the user's overall access status."""
+    ACTIVE = 'ACTIVE', 'Active'
+    INACTIVE = 'INACTIVE', 'Inactive' # When a monthly plan expires
+    CANCELLED = 'CANCELLED', 'Cancelled' # User cancelled monthly, active until period end
+    PAST_DUE = 'PAST_DUE', 'Past Due' # Monthly payment failed
 
 
 
