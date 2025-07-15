@@ -4,6 +4,8 @@ from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 
 
+
+
 class Subscriptions(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='subscriptions')
     plan_type = models.CharField(max_length=100, help_text="Type of subscription plan (e.g., Basic, Premium)")
