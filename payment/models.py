@@ -15,6 +15,14 @@ class PaymentGateway(models.TextChoices):
     PAYPAL = 'PAYPAL', 'Paypal'
     MANUAL = 'MANUAL', 'Manual/Admin'
 
+class PaymentStatus(models.TextChoices):
+    """Tracks the status of each payment attempt."""
+    ACTIVE = 'ACTIVE', 'Active'
+    INACTIVE = 'INACTIVE', 'Inactive' # When a monthly plan expires
+    CANCELLED = 'CANCELLED', 'Cancelled' # User cancelled monthly, active until period end
+    PAST_DUE = 'PAST_DUE', 'Past Due' # Monthly payment failed
+
+
 
 
 
