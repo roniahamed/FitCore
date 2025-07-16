@@ -67,5 +67,23 @@ class Subscription(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s {self.get_plan_display()} Plan ({self.get_status_display()})"
     
+
+    @property
+    def has_active_access(self):
+        """A single property to check if the user should have access."""
+        if self.plan == PlanType.LIFETIME and self.status == SubscriptionStatus.ACTIVE:
+            return True
+        if self.plan == PlanType.MONTHLY and self.status == SubscriptionStatus.ACTIVE and self.end_date and self.end_date > timezone.now():
+            return True
+        return False
+        
+    class Meta:
+        verbose_name = 'User Subscription'
+        verbose_name_plural = 'User Subscriptions'
+
+
 
