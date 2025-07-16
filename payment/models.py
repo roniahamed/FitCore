@@ -22,58 +22,49 @@ class PaymentStatus(models.TextChoices):
     FAILED = 'FAILED', 'Failed'
     REFUNDED = 'REFUNDED', 'Refunded'
 
-class SubscriptionsStatus(models.TextChoices):
+class SubscriptionStatus(models.TextChoices):
     """Tracks the user's overall access status."""
     ACTIVE = 'ACTIVE', 'Active'
     INACTIVE = 'INACTIVE', 'Inactive' # When a monthly plan expires
     CANCELLED = 'CANCELLED', 'Cancelled' # User cancelled monthly, active until period end
     PAST_DUE = 'PAST_DUE', 'Past Due' # Monthly payment failed
 
+# --- Core Models ---
 
-
-
-
-class Subscriptions(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='subscriptions')
-    plan_type = models.CharField(max_length=100, help_text="Type of subscription plan (e.g., Basic, Premium)")
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-    status = models.CharField(max_length=50, help_text="Subscription status (e.g., Active, Inactive, Cancelled)")
-
-    def __str__(self):
-        return f"{self.user.username}'s {self.plan_type} Subscription"
+class Subscription(models.Model):
+    """
+    Stores the user's current access plan and status.
+    There will be only one active subscription per user.
+    """
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,  related_name='subscription',
+        primary_key=True # A user can have only one subscription record, making this a profile extension
+    )
+    plan = models.CharField(
+        max_length=20,
+        choices=PlanType.choices,
+        help_text="The plan the user is currently on."
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=SubscriptionStatus.choices,
+        default=SubscriptionStatus.INACTIVE
+    )
+    start_date = models.DateTimeField(
+        null=True, blank=True,
+        help_text="Date when the subscription first started or the current period began."
+    )
+    end_date = models.DateTimeField(
+        null=True, blank=True,
+        help_text="For MONTHLY plan, this is the end of the current billing cycle. For LIFETIME, this is null."
+    )
     
-    class Meta:
-        verbose_name = 'Subscription'
-        verbose_name_plural = 'Subscriptions'
-        ordering = ['-start_date']
+    # --- Gateway Specific Subscription Info (for recurring payments) ---
+    gateway = models.CharField(max_length=20, choices=PaymentGateway.choices, null=True, blank=True)
+    gateway_subscription_id = models.CharField(
+        max_length=255, unique=True, null=True, blank=True,
+        help_text="e.g., Stripe Subscription ID (sub_...). Only for MONTHLY plan."
+    )
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-class Payments(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='payments')
-    subscription = models.ForeignKey(Subscriptions, on_delete=models.SET_NULL, null=True, blank=True, related_name='payments')
-    plan_name = models.CharField(max_length=200, blank=False, null=False, help_text="Name of the plan at the time of purchase")
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=50, help_text="Payment status (e.g., Succeeded, Failed, Pending)")
-    plan_type = models.CharField(max_length=100, blank=False, null=False, help_text="Type of plan purchased (e.g., Basic, Premium)")
-    start_date = models.DateTimeField(help_text="Subscription start date related to this payment")
-    end_date = models.DateTimeField(help_text="Subscription end date related to this payment")
-    purchases_date = models.DateTimeField(help_text="Date and time of the purchase")
-
-    def __str__(self):
-        return f"Payment of {self.amount} by {self.user.email} on {self.purchase_date.strftime('%Y-%m-%d')}"
-    
-    class Meta:
-        verbose_name = 'Payment'
-        verbose_name_plural = 'Payments'
-        ordering = ['-purchases_date']
-
-
-class Purchases(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='purchases')
-    plan_type = models.CharField(max_length=100)
-    purchases_date = models.DateField()
-    transaction_id = models.CharField(max_length=200)
-    
-    def __str__(self):
-        return f"{self.user} - {self.plan_type}"
