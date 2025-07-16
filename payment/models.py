@@ -57,7 +57,7 @@ class Subscription(models.Model):
         null=True, blank=True,
         help_text="For MONTHLY plan, this is the end of the current billing cycle. For LIFETIME, this is null."
     )
-    
+
     # --- Gateway Specific Subscription Info (for recurring payments) ---
     gateway = models.CharField(max_length=20, choices=PaymentGateway.choices, null=True, blank=True)
     gateway_subscription_id = models.CharField(
@@ -67,4 +67,5 @@ class Subscription(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
 
