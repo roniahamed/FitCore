@@ -104,3 +104,12 @@ test.txt
 .gitignore
 
 /.gitignore
+./.gitignore
+
+media
+/media
+./media
+media/
+
+
+profile
