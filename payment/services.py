@@ -26,3 +26,16 @@ def activate_user_subscription(user, plan_type, gateway, gateway_subscription_id
         subscription.gateway_subscription_id = None
     subscription.save()
     return subscription
+
+def handle_subscription_cancellation(gateway_subscription_id):
+    """
+    Handles a subscription cancellation event from the gateway.
+    """
+    try:
+        subscription = Subscription.objects.get(gateway_subscription_id=gateway_subscription_id)
+        subscription.status = SubscriptionStatus.CANCELLED
+        # Note: end_date remains the same. The user has access until the period ends.
+        subscription.save()
+    except Subscription.DoesNotExist:
+         # Log this error: A cancellation webhook was received for a subscription not in our DB.
+        print(f"Subscription with gateway_id {gateway_subscription_id} not found.")
