@@ -39,3 +39,15 @@ def handle_subscription_cancellation(gateway_subscription_id):
     except Subscription.DoesNotExist:
          # Log this error: A cancellation webhook was received for a subscription not in our DB.
         print(f"Subscription with gateway_id {gateway_subscription_id} not found.")
+
+def handle_failed_payment(gateway_subscription_id):
+    """
+    Handles a failed recurring payment.
+    """
+    try:
+        subscription = Subscription.objects.get(gateway_subscription_id=gateway_subscription_id)
+        subscription.status = SubscriptionStatus.PAST_DUE
+        subscription.save()
+    except Subscription.DoesNotExist:
+         print(f"Subscription with gateway_id {gateway_subscription_id} not found.")
+     
