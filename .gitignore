@@ -99,3 +99,8 @@ test
 .test
 /test
 test.txt
+
+
+.gitignore
+
+/.gitignore
