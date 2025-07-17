@@ -86,4 +86,26 @@ class Subscription(models.Model):
         verbose_name_plural = 'User Subscriptions'
 
 
+class Transaction(models.Model):
+    """
+    Records every single payment attempt, for both one-time and recurring plans.
+    This is your financial ledger.
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='transactions')
+    plan_at_purchase = models.CharField(max_length=20, choices=PlanType.choices)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=3, default='USD')
+    status = models.CharField(max_length=20, choices=PaymentStatus.choices, default=PaymentStatus.PENDING)
+    gateway = models.CharField(max_length=20, choices=PaymentGateway.choices)
+    gateway_transaction_id = models.CharField(max_length=255, unique=True)
+    invoice_url = models.URLField(blank=True, null=True)
+    gateway_response = models.JSONField(blank=True, null=True)
+    transaction_date = models.DateTimeField(default=timezone.now)
 
+    def __str__(self):
+        return f"Transaction {self.id} for {self.user.username} - {self.amount} {self.currency} ({self.status})"
+
+    class Meta:
+        verbose_name = 'Transaction'
+        verbose_name_plural = 'Transactions'
+        ordering = ['-transaction_date']

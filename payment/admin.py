@@ -1,5 +1,4 @@
 from django.contrib import admin
-# from .models import Subscriptions, Payments, Purchases
-# admin.site.register(Subscriptions)
-# admin.site.register(Payments)
-# admin.site.register(Purchases)
+from .models import Subscription, Transaction
+admin.site.register(Subscription)
+admin.site.register(Transaction)
