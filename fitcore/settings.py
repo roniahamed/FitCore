@@ -182,6 +182,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+
+##### Other Configurations
+
 # Email Settings
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -339,4 +342,18 @@ JAZZMIN_SETTINGS = {
         "auth.user": "collapsible",
         "auth.group": "vertical_tabs",
     },
+}
+
+
+# STRIPE CONFIGURATION
+
+STRIPE_PUBLIC_KEY = 'pk_key'
+STRIPE_SECRET_KEY = 'sk_key'
+STRIPE_WEBHOOK_SECRET = 'whs_key'
+
+# FITCORE PLAN IDS FROM YOUR STRIPE DASHBOARD
+# These are the Price IDs (price_...) you create in Stripe
+FITCORE_PLAN_IDS = {
+    'MONTHLY': 'price_xxxxxxxxxxxxxx',
+    'LIFETIME': 'price_yyyyyyyyyyyyyy',
 }
