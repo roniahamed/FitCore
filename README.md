@@ -1,4 +1,4 @@
-# FitCore - AI-Powered Fitness App (Backend Proposal)
+# FitCore - AI-Powered Fitness App (Backend )
 
 ## 📌 Project Overview
 
